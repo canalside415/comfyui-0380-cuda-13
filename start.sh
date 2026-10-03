@@ -30,4 +30,4 @@ fi
 filebrowser -r /workspace -a 0.0.0.0 -p 8080 -d "$FB_DB" &
 
 cd /opt/ComfyUI
-exec python main.py --listen 0.0.0.0 --port 8188 --enable-cors-header $COMFY_ARGS
+exec python main.py --listen 0.0.0.0 --port 8188 --enable-cors-header --enable-manager $COMFY_ARGS

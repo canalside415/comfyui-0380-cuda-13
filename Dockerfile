@@ -18,6 +18,7 @@ RUN pip install --no-cache-dir --upgrade pip \
 RUN git clone --branch ${COMFY_VERSION} --depth 1 \
       https://github.com/Comfy-Org/ComfyUI.git /opt/ComfyUI \
  && pip install --no-cache-dir -r /opt/ComfyUI/requirements.txt
+RUN pip install --no-cache-dir -U --pre comfyui-manager
 
 # Custom nodes (examples; add yours, ideally pinned to a tag or commit).
 # The constraint file stops node requirements from replacing torch.
