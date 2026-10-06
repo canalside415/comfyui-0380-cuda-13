@@ -1,4 +1,5 @@
 #!/bin/bash
+export SHELL=/bin/bash
 DATA="${COMFY_DATA:-/workspace/ComfyUI-data}"
 mkdir -p "$DATA"/{models,input,output,user}
 if [ -z "$(ls -A "$DATA/models")" ]; then cp -a /opt/ComfyUI/models/. "$DATA/models/"; fi
