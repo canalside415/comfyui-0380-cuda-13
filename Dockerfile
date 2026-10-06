@@ -28,6 +28,10 @@ RUN pip freeze | grep -E '^(torch|torchvision|torchaudio)==' > /tmp/torch-constr
  && git clone https://github.com/Lightricks/ComfyUI-LTXVideo \
  && git clone https://github.com/kijai/ComfyUI-KJNodes \
  && git clone https://github.com/Kosinkadink/ComfyUI-VideoHelperSuite \
+ && git clone https://github.com/rgthree/rgthree-comfy \
+ && git clone https://github.com/yolain/ComfyUI-Easy-Use \
+ && git clone https://github.com/warfy5/ComfyUI-RandomNumbers ComfyUI-RandomNumber \
+ && git clone https://github.com/hlibr/ComfyUI-GGUF-Prompt-Rewriter \
  && for d in */; do [ -f "$d/requirements.txt" ] && pip install --no-cache-dir -r "$d/requirements.txt" -c /tmp/torch-constraint.txt; done; true
 
 # JupyterLab in its own venv, File Browser as a single binary
