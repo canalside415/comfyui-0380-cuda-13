@@ -2,6 +2,7 @@ FROM nvidia/cuda:13.0.0-cudnn-runtime-ubuntu24.04
 
 ARG COMFY_VERSION=v0.38.0
 ENV DEBIAN_FRONTEND=noninteractive PYTHONUNBUFFERED=1
+ENV SHELL=/bin/bash
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
       python3 python3-venv python3-dev git curl ca-certificates ffmpeg \
@@ -40,6 +41,7 @@ RUN pip freeze | grep -E '^(torch|torchvision|torchaudio)==' > /tmp/torch-constr
 RUN python3 -m venv /opt/jupyter && /opt/jupyter/bin/pip install --no-cache-dir jupyterlab
 RUN curl -fsSL https://raw.githubusercontent.com/filebrowser/get/master/get.sh | bash
 
+RUN echo 'source /opt/venv/bin/activate' >> /root/.bashrc
 COPY start.sh /start.sh
 RUN chmod +x /start.sh
 WORKDIR /workspace
