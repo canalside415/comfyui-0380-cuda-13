@@ -1,6 +1,5 @@
 #!/bin/bash
 export SHELL=/bin/bash
-export SHELL=/bin/bash
 DATA="${COMFY_DATA:-/workspace/ComfyUI-data}"
 mkdir -p "$DATA"/{models,input,output,user}
 if [ -z "$(ls -A "$DATA/models")" ]; then cp -a /opt/ComfyUI/models/. "$DATA/models/"; fi
@@ -31,5 +30,22 @@ if [ ! -f "$FB_DB" ]; then
 fi
 filebrowser -r /workspace -a 0.0.0.0 -p 8080 -d "$FB_DB" &
 
+# --- Ollama (LLM backend), models kept on the Network Volume ---
+if command -v ollama >/dev/null 2>&1; then
+  export OLLAMA_MODELS=/workspace/ollama
+  export OLLAMA_HOST=127.0.0.1:11434
+  nohup ollama serve > /workspace/ollama.log 2>&1 &
+  echo "Ollama started (log: /workspace/ollama.log)"
+else
+  echo "Ollama not installed in image; skipping"
+fi
+
+# --- SillyTavern (chat frontend on port 8000) ---
+if [ -d /workspace/SillyTavern ] && command -v node >/dev/null 2>&1; then
+  (cd /workspace/SillyTavern && nohup ./start.sh > /workspace/sillytavern.log 2>&1 &)
+  echo "SillyTavern started (log: /workspace/sillytavern.log)"
+fi
+
+# --- ComfyUI must stay last: exec keeps the container alive ---
 cd /opt/ComfyUI
 exec python main.py --listen 0.0.0.0 --port 8188 --enable-cors-header --enable-manager $COMFY_ARGS

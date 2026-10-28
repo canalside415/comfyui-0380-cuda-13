@@ -27,7 +27,6 @@ RUN pip install --no-cache-dir -U --pre comfyui-manager
 # The constraint file stops node requirements from replacing torch.
 WORKDIR /opt/ComfyUI/custom_nodes
 RUN pip freeze | grep -E '^(torch|torchvision|torchaudio)==' > /tmp/torch-constraint.txt \
- && git clone https://github.com/ltdrdata/ComfyUI-Manager \
  && git clone https://github.com/Lightricks/ComfyUI-LTXVideo \
  && git clone https://github.com/kijai/ComfyUI-KJNodes \
  && git clone https://github.com/Kosinkadink/ComfyUI-VideoHelperSuite \
