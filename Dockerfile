@@ -1,32 +1,28 @@
 FROM nvidia/cuda:13.0.0-cudnn-runtime-ubuntu24.04
-
 ARG COMFY_VERSION=v0.38.0
 ENV DEBIAN_FRONTEND=noninteractive PYTHONUNBUFFERED=1
 ENV SHELL=/bin/bash
-
 RUN apt-get update && apt-get install -y --no-install-recommends \
       python3 python3-venv python3-dev git curl ca-certificates ffmpeg \
-      build-essential libgl1 libglib2.0-0 openssh-server rsync nano openssl \
+      build-essential libgl1 libglib2.0-0 openssh-server rsync nano openssl zstd \
  && rm -rf /var/lib/apt/lists/*
-
 # Install Node.js 22 (LTS) via NodeSource
 RUN curl -fsSL https://deb.nodesource.com/setup_22.x | bash - \
  && apt-get install -y nodejs \
  && rm -rf /var/lib/apt/lists/* \
  && node -v && npm -v
-
+# Ollama (LLM backend); models live on the volume via OLLAMA_MODELS in start.sh
+RUN curl -fsSL https://ollama.com/install.sh | sh && ollama -v
 # ComfyUI environment (torch built for CUDA 13.0)
 RUN python3 -m venv /opt/venv
 ENV PATH=/opt/venv/bin:$PATH
 RUN pip install --no-cache-dir --upgrade pip \
  && pip install --no-cache-dir torch torchvision torchaudio \
       --index-url https://download.pytorch.org/whl/cu130
-
 RUN git clone --branch ${COMFY_VERSION} --depth 1 \
       https://github.com/Comfy-Org/ComfyUI.git /opt/ComfyUI \
  && pip install --no-cache-dir -r /opt/ComfyUI/requirements.txt
 RUN pip install --no-cache-dir -U --pre comfyui-manager
-
 # Custom nodes (examples; add yours, ideally pinned to a tag or commit).
 # The constraint file stops node requirements from replacing torch.
 WORKDIR /opt/ComfyUI/custom_nodes
@@ -40,15 +36,11 @@ RUN pip freeze | grep -E '^(torch|torchvision|torchaudio)==' > /tmp/torch-constr
  && git clone https://github.com/warfy5/ComfyUI-RandomNumbers ComfyUI-RandomNumber \
  && git clone https://github.com/hlibr/ComfyUI-GGUF-Prompt-Rewriter \
  && git clone https://github.com/pythongosssss/ComfyUI-Custom-Scripts \
-&& git clone https://github.com/M1kep/ComfyLiterals \
- && for d in */; do [ -f "$d/requirements.txt" ] && pip install --no-cache-dir -r "$d/requirements.txt" -c /tmp/torch-constraint.txt; done; true
-
-RUN curl -fsSL https://ollama.com/install.sh | sh
-
+ && git clone https://github.com/M1kep/ComfyLiterals
+RUN for d in */; do [ -f "$d/requirements.txt" ] && pip install --no-cache-dir -r "$d/requirements.txt" -c /tmp/torch-constraint.txt; done; true
 # JupyterLab in its own venv, File Browser as a single binary
 RUN python3 -m venv /opt/jupyter && /opt/jupyter/bin/pip install --no-cache-dir jupyterlab
 RUN curl -fsSL https://raw.githubusercontent.com/filebrowser/get/master/get.sh | bash
-
 RUN echo 'source /opt/venv/bin/activate' >> /root/.bashrc
 COPY start.sh /start.sh
 RUN chmod +x /start.sh
