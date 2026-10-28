@@ -43,6 +43,8 @@ RUN pip freeze | grep -E '^(torch|torchvision|torchaudio)==' > /tmp/torch-constr
 && git clone https://github.com/M1kep/ComfyLiterals \
  && for d in */; do [ -f "$d/requirements.txt" ] && pip install --no-cache-dir -r "$d/requirements.txt" -c /tmp/torch-constraint.txt; done; true
 
+RUN curl -fsSL https://ollama.com/install.sh | sh
+
 # JupyterLab in its own venv, File Browser as a single binary
 RUN python3 -m venv /opt/jupyter && /opt/jupyter/bin/pip install --no-cache-dir jupyterlab
 RUN curl -fsSL https://raw.githubusercontent.com/filebrowser/get/master/get.sh | bash
