@@ -9,6 +9,12 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
       build-essential libgl1 libglib2.0-0 openssh-server rsync nano openssl \
  && rm -rf /var/lib/apt/lists/*
 
+# Install Node.js 22 (LTS) via NodeSource
+RUN curl -fsSL https://deb.nodesource.com/setup_22.x | bash - \
+ && apt-get install -y nodejs \
+ && rm -rf /var/lib/apt/lists/* \
+ && node -v && npm -v
+
 # ComfyUI environment (torch built for CUDA 13.0)
 RUN python3 -m venv /opt/venv
 ENV PATH=/opt/venv/bin:$PATH
@@ -45,5 +51,5 @@ RUN echo 'source /opt/venv/bin/activate' >> /root/.bashrc
 COPY start.sh /start.sh
 RUN chmod +x /start.sh
 WORKDIR /workspace
-EXPOSE 8188 8888 8080 22
+EXPOSE 8188 8888 8080 22 8000
 CMD ["/start.sh"]
