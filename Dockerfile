@@ -1,5 +1,5 @@
 FROM nvidia/cuda:13.0.0-cudnn-runtime-ubuntu24.04
-ARG COMFY_VERSION=v0.38.0
+ARG COMFY_VERSION=v0.45.3
 ENV DEBIAN_FRONTEND=noninteractive PYTHONUNBUFFERED=1
 ENV SHELL=/bin/bash
 RUN apt-get update && apt-get install -y --no-install-recommends \
